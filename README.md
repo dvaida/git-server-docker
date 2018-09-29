@@ -3,6 +3,10 @@ A lightweight Git Server Docker image built with Alpine Linux. Available on [Git
 
 !["image git server docker" "git server docker"](https://raw.githubusercontent.com/jkarlosb/git-server-docker/master/git-server-docker.jpg)
 
+### NOTE
+
+This is an UNSAFE / INSECURE (ssh wise) adaptation for personal / local use. Do NOT use on public servers / unsafe environments
+
 ### Basic Usage
 
 How to run the container in port 2222 with two volumes: keys volume for public keys and repos volume for git repositories:
