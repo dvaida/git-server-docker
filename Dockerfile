@@ -36,6 +36,6 @@ COPY git-shell-commands /home/git/git-shell-commands
 COPY sshd_config /etc/ssh/sshd_config
 COPY start.sh start.sh
 
-EXPOSE 2222
+EXPOSE 22
 
 CMD ["sh", "start.sh"]
