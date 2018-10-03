@@ -8,7 +8,8 @@ RUN apk add --no-cache \
 # openssh=7.2_p2-r1 \
   openssh \
 # git=2.8.3-r0
-  git
+  git \
+  curl
 
 # Key generation on the server
 RUN ssh-keygen -A
@@ -34,8 +35,10 @@ COPY git-shell-commands /home/git/git-shell-commands
 
 # sshd_config file is edited for enable access key and disable access password
 COPY sshd_config /etc/ssh/sshd_config
-COPY start.sh start.sh
+# COPY start.sh start.sh
 
 EXPOSE 22
 
-CMD ["sh", "start.sh"]
+ENV REPOS_ROOT git-server
+
+CMD ["sh", "/scripts/start.sh"]
