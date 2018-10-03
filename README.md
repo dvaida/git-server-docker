@@ -1,3 +1,8 @@
+# A push-to-build image build on top of Docker in Docker and the below git server
+
+export REPOS_ROOT="evolving" && docker run --privileged -d -e REPOS_ROOT=$REPOS_ROOT -p 2222:22 -v $(pwd)/scripts:/scripts -v $(pwd)/__repos:/$REPOS_ROOT/ adaptorel/git-server-unsafe:0.0.1
+docker ps | grep 'adaptorel/git-server-unsafe' | awk '{print $1}' | xargs -I {} docker exec {} /scripts/create-repo.sh nglm-core
+
 # git-server-docker
 A lightweight Git Server Docker image built with Alpine Linux. Available on [GitHub](https://github.com/jkarlosb/git-server-docker) and [Docker Hub](https://hub.docker.com/r/jkarlos/git-server-docker/)
 

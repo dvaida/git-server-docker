@@ -1,13 +1,9 @@
-FROM alpine:3.4
-
-MAINTAINER Carlos Bernárdez "carlos@z4studios.com"
+FROM docker:dind
 
 # "--no-cache" is new in Alpine 3.3 and it avoid using
 # "--update + rm -rf /var/cache/apk/*" (to remove cache)
 RUN apk add --no-cache \
-# openssh=7.2_p2-r1 \
   openssh \
-# git=2.8.3-r0
   git \
   curl
 
@@ -17,12 +13,9 @@ RUN ssh-keygen -A
 # SSH autorun
 # RUN rc-update add sshd
 
-WORKDIR /git-server/
-
 # -D flag avoids password generation
 # -s flag changes user's shell
-RUN mkdir /git-server/keys \
-  && adduser -D -s /usr/bin/git-shell git \
+RUN adduser -D -s /usr/bin/git-shell -G docker -G wheel git \
   && echo git: | chpasswd \
   && mkdir /home/git/.ssh
 
@@ -41,4 +34,38 @@ EXPOSE 22
 
 ENV REPOS_ROOT git-server
 
+ENTRYPOINT []
 CMD ["sh", "/scripts/start.sh"]
+
+# Default to UTF-8 file.encoding
+ENV LANG C.UTF-8
+
+# add a simple script that can auto-detect the appropriate JAVA_HOME value
+# based on whether the JDK or only the JRE is installed
+RUN { \
+                echo '#!/bin/sh'; \
+                echo 'set -e'; \
+                echo; \
+                echo 'dirname "$(dirname "$(readlink -f "$(which javac || which java)")")"'; \
+        } > /usr/local/bin/docker-java-home \
+        && chmod +x /usr/local/bin/docker-java-home
+ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
+ENV PATH $PATH:/usr/lib/jvm/java-1.8-openjdk/jre/bin:/usr/lib/jvm/java-1.8-openjdk/bin
+
+ENV JAVA_VERSION 8u171
+ENV JAVA_ALPINE_VERSION 8.171.11-r0
+
+RUN set -x \
+        && apk add --no-cache openjdk8 \
+        && [ "$JAVA_HOME" = "$(docker-java-home)" ]
+
+# If you're reading this and have any feedback on how this image could be
+# improved, please open an issue or a pull request so we can discuss it!
+#
+#   https://github.com/docker-library/openjdk/issues
+
+RUN apk add --no-cache \
+  sudo \
+  shadow \
+  maven
+
